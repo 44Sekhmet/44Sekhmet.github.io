@@ -19,33 +19,6 @@
 > 整合台灣、日本地震資料,陪你掌握每一次震動。  
 > 即時監測 · 歷史分析 · AI 解讀 · 防災知識。
 
----
-
-## 📁 Repo 結構
-
-```
-44Sekhmet.github.io/
-├── index.html       # 台日地震監測 App 官方介紹頁 (landing page)
-├── app-ads.txt      # Google AdMob 廣告驗證檔
-└── README.md        # 本檔案
-```
-
-| 檔案 | 用途 | 訪問位置 |
-|------|------|----------|
-| `index.html` | 主頁,介紹 App 功能與下載 | [https://44sekhmet.github.io/](https://44sekhmet.github.io/) |
-| `app-ads.txt` | AdMob publisher 驗證 | [https://44sekhmet.github.io/app-ads.txt](https://44sekhmet.github.io/app-ads.txt) |
-
----
-
-## 🚀 部署
-
-本網站使用 **GitHub Pages User Site** 自動部署:
-
-- **觸發**: 推送至 `main` branch 後自動部署
-- **域名**: `https://44sekhmet.github.io/`
-- **建置時間**: 約 1-2 分鐘
-
-無需設定 CI/CD,GitHub 原生支援。
 
 ---
 
