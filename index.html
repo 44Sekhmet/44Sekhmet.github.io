@@ -2,148 +2,659 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>住台日地震監測分析 | iOS App</title>
-    <meta name="description" content="專為旅居台灣與日本的使用者打造,提供即時地震監測、震度分析、歷史紀錄與防災資訊。">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#06060c">
+    <title>台日地震監測 | 台日地震預警速報・防災資訊</title>
+    <meta name="description" content="整合台灣、日本地震資料,陪你掌握每一次震動。即時監測、歷史分析、AI 解讀、防災知識。">
+    <meta property="og:title" content="台日地震監測">
+    <meta property="og:description" content="台日地震預警速報・防災資訊">
+    <meta property="og:type" content="website">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif;
-            background: #0a0a0a;
-            color: #e0e0e0;
-            line-height: 1.6;
+        :root {
+            --bg0: #06060c;
+            --bg1: #0d0d18;
+            --bg2: #12121f;
+            --bg3: #1a1a2e;
+            --red: #ff3333;
+            --amber: #ffaa00;
+            --cyan: #00d4ff;
+            --cyan2: #66e5ff;
+            --green: #00e87a;
+            --text0: #f0f0f0;
+            --text1: #b0b0c0;
+            --text2: #6060a0;
+            --border: #2a2a4a;
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bot: env(safe-area-inset-bottom, 0px);
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            background: var(--bg0);
+            color: var(--text0);
+            font-family: 'Noto Sans TC', sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 20% 0%, rgba(0,212,255,0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 100%, rgba(255,51,51,0.05) 0%, transparent 50%),
+                linear-gradient(rgba(42,42,74,0.15) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(42,42,74,0.15) 1px, transparent 1px);
+            background-size: auto, auto, 50px 50px, 50px 50px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
         .hero {
-            background: radial-gradient(ellipse at top, #2a1a0a 0%, #0a0a0a 70%);
-            min-height: 60vh;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 20px 60px;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero-grid-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+            opacity: 0.3;
+            animation: scan 4s ease-in-out infinite;
+        }
+
+        @keyframes scan {
+            0%, 100% { transform: translateY(-150px); opacity: 0.1; }
+            50% { transform: translateY(150px); opacity: 0.4; }
+        }
+
+        .app-icon {
+            width: 120px;
+            height: 120px;
+            border-radius: 24px;
+            background: var(--bg1);
+            border: 1px solid var(--border);
+            box-shadow:
+                0 0 0 1px rgba(0,212,255,0.1),
+                0 20px 40px rgba(0,0,0,0.5),
+                inset 0 1px 0 rgba(255,255,255,0.03);
             display: flex;
             align-items: center;
             justify-content: center;
-            text-align: center;
-            padding: 60px 20px;
-        }
-        .hero-content {
-            max-width: 800px;
-        }
-        .logo {
-            font-size: 48px;
-            margin-bottom: 16px;
-            color: #ff6b35;
-        }
-        h1 {
-            font-size: 36px;
-            margin-bottom: 16px;
-            color: #fff;
-        }
-        .tagline {
-            font-size: 18px;
-            color: #b0b0b0;
             margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
         }
-        .cta {
-            display: inline-block;
-            background: #ff6b35;
-            color: #fff;
-            padding: 14px 32px;
-            border-radius: 28px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: background 0.2s;
+
+        .app-icon svg {
+            width: 76%;
+            height: 76%;
         }
-        .cta:hover {
-            background: #e85a25;
+
+        .app-icon::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 30%, rgba(255,107,53,0.08), transparent 60%);
+            pointer-events: none;
         }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 60px 20px;
+
+        .live-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 2px;
+            color: var(--cyan);
+            border: 1px solid var(--cyan);
+            padding: 4px 12px;
+            border-radius: 2px;
+            margin-bottom: 24px;
+            background: rgba(0,212,255,0.05);
         }
-        section {
+
+        .live-tag::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--cyan);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        h1 {
+            font-size: clamp(32px, 6vw, 56px);
+            font-weight: 700;
+            letter-spacing: 4px;
+            margin-bottom: 12px;
+            color: var(--text0);
+            text-shadow: 0 0 30px rgba(0,212,255,0.2);
+        }
+
+        .tagline {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 13px;
+            letter-spacing: 4px;
+            color: var(--cyan);
+            margin-bottom: 40px;
+            text-transform: uppercase;
+        }
+
+        .hero-intro {
+            max-width: 640px;
+            color: var(--text1);
+            font-size: 16px;
+            line-height: 1.8;
             margin-bottom: 48px;
         }
-        h2 {
-            font-size: 24px;
-            color: #ff6b35;
-            margin-bottom: 16px;
-            border-bottom: 1px solid #333;
-            padding-bottom: 8px;
+
+        .hero-intro .accent {
+            color: var(--text0);
+            font-weight: 500;
         }
-        p {
-            margin-bottom: 12px;
-            color: #c0c0c0;
+
+        .cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--cyan);
+            color: var(--bg0);
+            padding: 16px 36px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 15px;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+            box-shadow:
+                0 0 0 1px var(--cyan),
+                0 0 30px rgba(0,212,255,0.4);
         }
-        ul {
-            padding-left: 24px;
-            color: #c0c0c0;
+
+        .cta:hover {
+            background: var(--cyan2);
+            transform: translateY(-2px);
+            box-shadow:
+                0 0 0 1px var(--cyan),
+                0 0 40px rgba(0,212,255,0.6);
         }
-        li {
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 80px 20px;
+        }
+
+        .section-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 4px;
+            color: var(--cyan);
             margin-bottom: 8px;
+            text-transform: uppercase;
         }
-        a {
-            color: #ff8c5a;
+
+        .section-title {
+            font-size: clamp(24px, 4vw, 36px);
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 48px;
+            color: var(--text0);
         }
-        footer {
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 2px;
+            background: var(--cyan);
+            margin-top: 12px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .feature-card {
+            background: var(--bg1);
+            border: 0.5px solid var(--border);
+            border-radius: 8px;
+            padding: 28px 24px;
+            position: relative;
+            transition: all 0.3s;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .feature-card:hover {
+            border-color: var(--cyan);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0,212,255,0.1);
+        }
+
+        .feature-id {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--text2);
+            margin-bottom: 12px;
+        }
+
+        .feature-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text0);
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+
+        .feature-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-card li {
+            font-size: 14px;
+            color: var(--text1);
+            padding-left: 16px;
+            position: relative;
+            margin-bottom: 6px;
+        }
+
+        .feature-card li::before {
+            content: '\u25b8';
+            position: absolute;
+            left: 0;
+            color: var(--cyan);
+        }
+
+        .audience-section {
+            background: var(--bg1);
+            border-top: 0.5px solid var(--border);
+            border-bottom: 0.5px solid var(--border);
+        }
+
+        .audience-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
+            list-style: none;
+            padding: 0;
+        }
+
+        .audience-list li {
+            background: var(--bg2);
+            border: 0.5px solid var(--border);
+            border-radius: 4px;
+            padding: 16px 20px;
+            color: var(--text1);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .audience-list li::before {
+            content: '\u25c6';
+            color: var(--cyan);
+            font-size: 10px;
+        }
+
+        .philosophy {
             text-align: center;
-            padding: 40px 20px;
-            border-top: 1px solid #222;
-            color: #707070;
+            padding: 100px 20px;
+            background:
+                radial-gradient(ellipse at center, rgba(0,212,255,0.05) 0%, transparent 70%),
+                var(--bg0);
+            border-top: 0.5px solid var(--border);
+            border-bottom: 0.5px solid var(--border);
+        }
+
+        .philosophy-text {
+            max-width: 700px;
+            margin: 0 auto;
+            font-size: clamp(18px, 3vw, 24px);
+            line-height: 1.8;
+            color: var(--text0);
+            font-weight: 500;
+            letter-spacing: 2px;
+        }
+
+        .philosophy-text .highlight {
+            color: var(--cyan);
+        }
+
+        .privacy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .privacy-item {
+            background: var(--bg1);
+            border: 0.5px solid var(--border);
+            border-left: 2px solid var(--green);
+            padding: 20px 24px;
+            border-radius: 4px;
+        }
+
+        .privacy-item-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 2px;
+            color: var(--green);
+            margin-bottom: 6px;
+        }
+
+        .privacy-item-desc {
+            color: var(--text0);
             font-size: 14px;
         }
+
+        .disclaimer {
+            background: var(--bg2);
+            border: 0.5px solid var(--border);
+            border-left: 2px solid var(--amber);
+            padding: 24px 28px;
+            border-radius: 4px;
+            color: var(--text1);
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .disclaimer-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 3px;
+            color: var(--amber);
+            margin-bottom: 8px;
+        }
+
+        .contact {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .contact-email {
+            display: inline-block;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 16px;
+            letter-spacing: 2px;
+            color: var(--cyan);
+            text-decoration: none;
+            border: 1px solid var(--cyan);
+            padding: 16px 32px;
+            border-radius: 4px;
+            margin-top: 16px;
+            transition: all 0.2s;
+        }
+
+        .contact-email:hover {
+            background: rgba(0,212,255,0.1);
+            box-shadow: 0 0 20px rgba(0,212,255,0.3);
+        }
+
+        footer {
+            background: var(--bg1);
+            border-top: 0.5px solid var(--border);
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--text2);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--cyan);
+        }
+
+        .copyright {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            color: var(--text2);
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 60px 16px;
+            }
+
+            .app-icon {
+                width: 96px;
+                height: 96px;
+            }
+
+            h1 {
+                letter-spacing: 2px;
+            }
+
+            .tagline {
+                letter-spacing: 2px;
+                font-size: 11px;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-out backwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in:nth-child(2) { animation-delay: 0.1s; }
+        .fade-in:nth-child(3) { animation-delay: 0.2s; }
+        .fade-in:nth-child(4) { animation-delay: 0.3s; }
+        .fade-in:nth-child(5) { animation-delay: 0.4s; }
     </style>
 </head>
 <body>
+
     <header class="hero">
-        <div class="hero-content">
-            <div class="logo">📡</div>
-            <h1>住台日地震監測分析</h1>
-            <p class="tagline">即時地震監測 · 震度分析 · 防災資訊</p>
-            <p class="tagline" style="font-size: 14px; margin-top: 8px;">專為台灣與日本使用者打造</p>
-            <!-- 上架後可以更新成真實 App Store 連結 -->
-            <a href="https://apps.apple.com/tw/app/%E5%8F%B0%E6%97%A5%E5%9C%B0%E9%9C%87%E7%9B%A3%E6%B8%AC/id6762127915" class="cta">App Store 下載</a>
+        <div class="hero-grid-line"></div>
+
+        <div class="app-icon fade-in">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="44" fill="none" stroke="#ff6b35" stroke-width="2" opacity="0.8"/>
+                <path d="M 12 50 L 25 50 L 30 35 L 38 65 L 45 30 L 52 70 L 60 40 L 68 55 L 75 50 L 88 50"
+                      fill="none" stroke="#ff6b35" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <text x="32" y="84" font-family="'Share Tech Mono', monospace" font-size="9" fill="#00d4ff" letter-spacing="1">TW</text>
+                <text x="58" y="84" font-family="'Share Tech Mono', monospace" font-size="9" fill="#00d4ff" letter-spacing="1">JP</text>
+                <circle cx="50" cy="80" r="1" fill="#00d4ff"/>
+            </svg>
         </div>
+
+        <div class="live-tag fade-in">LIVE MONITORING</div>
+
+        <h1 class="fade-in">台日地震監測</h1>
+        <div class="tagline fade-in">SEISMIC ALERT &middot; DISASTER PREVENTION</div>
+
+        <p class="hero-intro fade-in">
+            日常往返地震帶頻繁國家,是否時常感到害怕、驚慌失措?<br><br>
+            <span class="accent">這款 App 整合台灣、日本地震資料,陪你掌握每一次震動,觀察地震頻繁區域。</span><br><br>
+            讓我們一起用數據與知識,把恐懼換成安心,讓地震來時知道該怎麼做。
+        </p>
+
+        <a href="https://apps.apple.com/tw/app/%E5%8F%B0%E6%97%A5%E5%9C%B0%E9%9C%87%E7%9B%A3%E6%B8%AC/id6762127915" target="_blank"
+           class="cta fade-in">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+            </svg>
+            DOWNLOAD ON APP STORE
+        </a>
     </header>
 
-    <main class="container">
-        <section>
-            <h2>關於</h2>
-            <p>「住台日地震監測分析」是一款專為台灣與日本使用者設計的地震監測應用程式,整合 P2PQuake、JMA、中央氣象署等資料源,提供即時地震資訊與防災參考。</p>
-        </section>
+    <section class="container">
+        <div class="section-label">// CORE FEATURES</div>
+        <h2 class="section-title">核心功能</h2>
 
-        <section>
-            <h2>主要功能</h2>
-            <ul>
-                <li>🔔 即時地震監測 (台灣、日本)</li>
-                <li>📊 震度與規模分析</li>
-                <li>🗺️ 互動式震央地圖</li>
-                <li>📜 歷史地震紀錄</li>
-                <li>📈 年度趨勢統計</li>
-                <li>⚠️ EEW 緊急地震速報</li>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-id">// MODULE_01 &middot; JP</div>
+                <h3>日本地震監測與速報</h3>
+                <ul>
+                    <li>即時掌握日本地震資訊</li>
+                    <li>快速查看震度、規模、發生位置</li>
+                    <li>第一時間了解地震動態</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-id">// MODULE_02 &middot; TW</div>
+                <h3>台灣地震監測</h3>
+                <ul>
+                    <li>即時地震監測</li>
+                    <li>清楚呈現震央與震級</li>
+                    <li>持續優化未來速報功能</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-id">// MODULE_03 &middot; STATS</div>
+                <h3>台日地震歷史數據分析</h3>
+                <ul>
+                    <li>收錄歷史地震紀錄</li>
+                    <li>比較台灣與日本地震分布</li>
+                    <li>看懂地震發生的規律</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-id">// MODULE_04 &middot; AI</div>
+                <h3>AI 地震數據解讀</h3>
+                <ul>
+                    <li>自動分析地震數據</li>
+                    <li>用簡單方式理解震度與風險</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-id">// MODULE_05 &middot; GUIDE</div>
+                <h3>地震防災知識</h3>
+                <ul>
+                    <li>地震來時該怎麼做</li>
+                    <li>避難與應變指南</li>
+                    <li>日常防災準備建議</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="audience-section">
+        <div class="container">
+            <div class="section-label">// TARGET USERS</div>
+            <h2 class="section-title">適合族群</h2>
+
+            <ul class="audience-list">
+                <li>害怕地震、想降低焦慮的人</li>
+                <li>時常往返台灣、日本地區的人</li>
+                <li>旅居日本或常前往日本旅遊的人</li>
+                <li>關心台灣地震資訊的用戶</li>
+                <li>想學習防災知識的人</li>
             </ul>
-        </section>
+        </div>
+    </section>
 
-        <section>
-            <h2>資料來源</h2>
-            <ul>
-                <li>中央氣象署 (台灣)</li>
-                <li>P2PQuake / JMA (日本)</li>
-                <li>國土測繪中心 NLSC (地圖)</li>
-                <li>OpenStreetMap (地圖)</li>
-            </ul>
-        </section>
+    <section class="philosophy">
+        <p class="philosophy-text">
+            地震無法避免,<br>
+            但<span class="highlight">恐懼可以被理解與降低</span>。<br><br>
+            當你掌握資訊,<br>
+            就不再只是被動承受。<br><br>
+            讓我們從今天開始,<br>
+            <span class="highlight">用知識取代不安</span>,<br>
+            讓每一次震動,都在你的掌握之中。
+        </p>
+    </section>
 
-        <section>
-            <h2>聯絡與支援</h2>
-            <p>Email: <a href="mailto:contact@zhaohe.co">contact@zhaohe.co</a></p>
-        </section>
+    <section class="container">
+        <div class="section-label">// PRIVACY COMMITMENT</div>
+        <h2 class="section-title">隱私權承諾</h2>
 
-        <section>
-            <h2>隱私政策</h2>
-            <p>本 App 不收集使用者個人資料。詳細請見 <a href="https://44sekhmet.github.io/privacy-policy/tjrem_privacy.html">隱私政策</a> (撰寫中)。</p>
-        </section>
-    </main>
+        <div class="privacy-grid">
+            <div class="privacy-item">
+                <div class="privacy-item-label">// 0x01</div>
+                <div class="privacy-item-desc">不收集姓名、電話、Email</div>
+            </div>
+            <div class="privacy-item">
+                <div class="privacy-item-label">// 0x02</div>
+                <div class="privacy-item-desc">不使用 GPS 定位</div>
+            </div>
+            <div class="privacy-item">
+                <div class="privacy-item-label">// 0x03</div>
+                <div class="privacy-item-desc">不要求帳號註冊</div>
+            </div>
+            <div class="privacy-item">
+                <div class="privacy-item-label">// 0x04</div>
+                <div class="privacy-item-desc">解除安裝即清除所有資料</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="container" style="padding-top: 0;">
+        <div class="disclaimer">
+            <div class="disclaimer-label">// IMPORTANT NOTICE</div>
+            本 App 為非官方民間服務,資料來源已於 App 內顯著位置標示。日本緊急地震速報 (EEW) 之預估震度僅供即時參考,請以中央氣象署 / JMA 官方發布為最終依據。
+        </div>
+    </section>
+
+    <section class="contact">
+        <div class="section-label">// CONTACT</div>
+        <h2 class="section-title" style="margin-bottom: 16px;">意見回報</h2>
+        <p style="color: var(--text1); margin-bottom: 8px;">歡迎來信交流功能建議或問題回報</p>
+        <a href="mailto:contact@zhaohe.co" class="contact-email">contact@zhaohe.co</a>
+    </section>
 
     <footer>
-        <p>&copy; 2026 Yi Pei Kuo. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="https://44sekhmet.github.io/privacy-policy/tjrem_privacy.html">PRIVACY POLICY</a>
+            <a href="https://apps.apple.com/tw/app/%E5%8F%B0%E6%97%A5%E5%9C%B0%E9%9C%87%E7%9B%A3%E6%B8%AC/id6762127915">APP STORE</a>
+            <a href="mailto:contact@zhaohe.co">CONTACT</a>
+        </div>
+        <div class="copyright">&copy; 2026 YI PEI KUO &middot; ALL RIGHTS RESERVED</div>
     </footer>
+
 </body>
 </html>
