@@ -7,6 +7,7 @@
 [![App Store](https://img.shields.io/badge/App_Store-Download-0D96F6?style=for-the-badge&logo=app-store&logoColor=white)](https://apps.apple.com/tw/app/%E5%8F%B0%E6%97%A5%E5%9C%B0%E9%9C%87%E7%9B%A3%E6%B8%AC/id6762127915)
 [![Website](https://img.shields.io/badge/Live_Site-44sekhmet.github.io-00d4ff?style=for-the-badge)](https://44sekhmet.github.io/)
 [![Privacy](https://img.shields.io/badge/Privacy-Policy-00e87a?style=for-the-badge)](https://44sekhmet.github.io/privacy-policy/tjrem_privacy.html)
+[![APP 使用手冊](https://img.shields.io/badge/APP-%E4%BD%BF%E7%94%A8%E6%95%99%E5%AD%B8-78b0d3?style=for-the-badge)](https://44sekhmet.github.io/app-tutorial.html)
 
 </div>
 
