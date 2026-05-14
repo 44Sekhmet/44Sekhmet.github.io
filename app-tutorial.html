@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>台日地震監測 · 使用教學</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #06060c;
+  --bg2:      #0d0d18;
+  --bg3:      #12121f;
+  --line:     rgba(255,255,255,0.07);
+  --line2:    rgba(255,255,255,0.14);
+  --text:     #e8e8f0;
+  --muted:    #6b6b88;
+  --muted2:   #9898b8;
+  --accent:   #4fc3f7;
+  --accent2:  #7e57c2;
+  --green:    #66bb6a;
+  --red:      #ef5350;
+  --amber:    #ffa726;
+  --mono:     'Space Mono', monospace;
+  --sans:     'Noto Sans TC', sans-serif;
+  --radius:   4px;
+  --radius-lg:8px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);
+  pointer-events: none;
+  z-index: 999;
+}
+
+/* ── HERO ── */
+.hero {
+  position: relative;
+  border-bottom: 1px solid var(--line2);
+  padding: 72px 24px 56px;
+  text-align: center;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(79,195,247,0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 30% at 80% 80%, rgba(126,87,194,0.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+.hero-tag {
+  font-family: var(--mono);
+  font-size: 15px; letter-spacing: 3px;
+  color: var(--accent); text-transform: uppercase;
+  margin-bottom: 20px; opacity: 0.8;
+}
+.hero h1 {
+  font-family: var(--mono);
+  font-size: clamp(22px, 4vw, 38px);
+  font-weight: 700; color: #fff;
+  letter-spacing: -0.5px; margin-bottom: 15px;
+}
+.hero h1 span { color: var(--accent); }
+.hero-sub {
+  font-size: 15px; color: var(--muted2);
+  max-width: 480px; margin: 0 auto;
+  font-family: var(--mono); letter-spacing: 0.5px;
+}
+
+/* ── NAV ── */
+.nav-wrap {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(6,6,12,0.92);
+  backdrop-filter: blur(15px);
+  border-bottom: 1px solid var(--line2);
+}
+.nav-inner {
+  max-width: 900px; margin: 0 auto; padding: 0 20px;
+  display: flex; overflow-x: auto; scrollbar-width: none;
+}
+.nav-inner::-webkit-scrollbar { display: none; }
+.nav-tab {
+  flex-shrink: 0;
+  font-family: var(--mono); font-size: 15px;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--muted); padding: 16px 18px;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: color .2s, border-color .2s;
+  white-space: nowrap;
+  display: flex; align-items: center; gap: 7px;
+}
+.nav-tab:hover { color: var(--text); }
+.nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.nav-tab .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.6; }
+
+/* ── MAIN ── */
+main { max-width: 900px; margin: 0 auto; padding: 60px 20px 100px; }
+
+/* ── SECTION ── */
+.section { margin-bottom: 80px; scroll-margin-top: 64px; }
+.section-label {
+  font-family: var(--mono); font-size: 15px;
+  letter-spacing: 3px; color: var(--muted);
+  text-transform: uppercase; margin-bottom: 15px;
+  display: flex; align-items: center; gap: 15px;
+}
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--line2); }
+.section-title { font-size: 24px; font-weight: 700; color: #fff; margin-bottom: 6px; line-height: 1.3; }
+.section-desc  { font-size: 15px; color: var(--muted2); margin-bottom: 28px; max-width: 560px; }
+
+/* ── CHIPS ── */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+.chip {
+  font-family: var(--mono); font-size: 15px; letter-spacing: 1px;
+  padding: 5px 15px; border-radius: 20px;
+  border: 1px solid var(--line2); color: var(--muted2); background: var(--bg2);
+}
+
+
+/* ── STEP CARD ──
+   Structure: .step > .step-body (text, top) + .step-imgs (3 photos, bottom)
+*/
+.steps { display: flex; flex-direction: column; gap: 16px; }
+
+.step {
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: border-color .25s;
+}
+.step:hover { border-color: var(--line2); }
+
+/* Text area — top */
+.step-body {
+  padding: 24px 28px 20px;
+  border-bottom: 1px solid var(--line);
+}
+.step-num {
+  font-family: var(--mono); font-size: 15px;
+  color: var(--muted); letter-spacing: 2px;
+  margin-bottom: 15px;
+  display: flex; align-items: center; gap: 8px;
+}
+.step-num-badge {
+  background: var(--line2); color: var(--muted2);
+  border-radius: var(--radius); padding: 2px 8px; font-size: 15px;
+}
+.accent-cyan   .step-num-badge { background: rgba(79,195,247,0.12);  color: var(--accent); }
+.accent-green  .step-num-badge { background: rgba(102,187,106,0.12); color: var(--green); }
+.accent-red    .step-num-badge { background: rgba(102,187,106,0.12);   color: var(--green); }
+.accent-purple .step-num-badge { background: rgba(126,87,194,0.12);  color: var(--accent2); }
+.accent-amber  .step-num-badge { background: rgba(255,167,38,0.12);  color: var(--amber); }
+
+.step-body h3 { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 8px; line-height: 1.4; }
+.step-body p  { font-size: 15px; color: var(--muted2); line-height: 1.8; }
+.step-body p + p { margin-top: 6px; }
+.step-body ul {
+  margin-top: 8px; list-style: none;
+  display: flex; flex-wrap: wrap; gap: 4px 24px;
+}
+.step-body ul li { font-size: 15px; color: var(--muted2); padding-left: 15px; position: relative; }
+.step-body ul li::before { content: '›'; position: absolute; left: 0; color: var(--muted); }
+
+.step-note {
+  margin-top: 15px;
+  background: rgba(255,255,255,0.03);
+  border-left: 2px solid var(--line2);
+  padding: 7px 15px;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  font-family: var(--mono); font-size: 15px; color: var(--muted); line-height: 1.6;
+}
+.accent-cyan   .step-note { border-color: rgba(79,195,247,0.3); }
+.accent-green  .step-note { border-color: rgba(102,187,106,0.3); }
+.accent-red    .step-note { border-color: rgba(239,83,80,0.3); }
+.accent-purple .step-note { border-color: rgba(126,87,194,0.3); }
+.accent-amber  .step-note { border-color: rgba(255,167,38,0.3); }
+
+/* Image row — bottom: 3 equal columns */
+.step-imgs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: var(--bg3);
+}
+
+.step-img {
+  position: relative;
+  min-height: 320px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 15px; padding: 20px 15px;
+  overflow: hidden;
+  border-right: 1px solid var(--line);
+}
+.step-img:last-child { border-right: none; }
+
+/* dashed inset frame */
+.step-img::after {
+  content: '';
+  position: absolute; inset: 15px;
+  border: 1px dashed rgba(255,255,255,0.09);
+  border-radius: var(--radius);
+  pointer-events: none;
+}
+
+.img-icon {
+  width: 44px; height: 44px;
+  border: 1px solid var(--line2); border-radius: var(--radius-lg);
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg2); flex-shrink: 0;
+}
+.img-icon svg { width: 18px; height: 18px; opacity: 0.28; }
+.img-label {
+  font-family: var(--mono); font-size: 9px;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--muted); text-align: center;
+}
+.img-hint { font-size: 15px; color: rgba(255,255,255,0.15); text-align: center; }
+
+/* Drop in a real screenshot: add <img src="..." alt="..."> inside .step-img */
+.step-img img {
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: contain; padding: 15px;
+}
+
+/* ── KNOWLEDGE GRID ── */
+.kb-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 15px; margin-bottom: 24px;
+}
+.kb-card {
+  background: var(--bg2); border: 1px solid var(--line);
+  border-radius: var(--radius-lg); padding: 20px 18px;
+  transition: border-color .2s;
+}
+.kb-card:hover { border-color: var(--line2); }
+.kb-card-tag {
+  font-family: var(--mono); font-size: 9px;
+  letter-spacing: 2px; color: var(--muted);
+  text-transform: uppercase; margin-bottom: 15px;
+}
+.kb-card h4 { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 6px; line-height: 1.4; }
+.kb-card p  { font-size: 15px; color: var(--muted2); line-height: 1.7; }
+
+/* ── NOTICE ── */
+.notice {
+  border: 1px solid var(--line2); border-radius: var(--radius-lg);
+  padding: 16px 20px; margin-top: 24px;
+  display: flex; gap: 15px; align-items: flex-start;
+  background: rgba(255,255,255,0.02);
+}
+.notice-icon { font-family: var(--mono); font-size: 15px; color: var(--muted); padding-top: 2px; flex-shrink: 0; }
+.notice p    { font-size: 15px; color: #ffa726; line-height: 1.7; }
+
+/* ── DIVIDER ── */
+.divider { height: 1px; background: var(--line); margin: 48px 0; }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--line);
+  text-align: center; padding: 32px 20px;
+  font-family: var(--mono); font-size: 15px;
+  letter-spacing: 2px; color: var(--muted); text-transform: uppercase;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 680px) {
+  .step-imgs { grid-template-columns: 1fr; }
+  .step-img  { border-right: none; border-bottom: 1px solid var(--line); min-height: 260px; }
+  .step-img:last-child { border-bottom: none; }
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+.section { animation: fadeUp .5s ease both; }
+.section:nth-child(1){animation-delay:.05s}
+.section:nth-child(2){animation-delay:.10s}
+.section:nth-child(3){animation-delay:.15s}
+.section:nth-child(4){animation-delay:.20s}
+.section:nth-child(5){animation-delay:.25s}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">// TUTORIAL · 使用教學</div>
+  <h1>台日地震監測<br><span>APP 使用教學</span></h1>
+  <p class="hero-sub">SEISMIC MONITORING · USER GUIDE · v1.0</p>
+</div>
+
+<!-- NAV -->
+<nav class="nav-wrap">
+  <div class="nav-inner">
+    <a class="nav-tab active" href="#realtime"><span class="dot"></span>即時監測</a>
+    <a class="nav-tab" href="#region"><span class="dot"></span>地區統計</a>
+    <a class="nav-tab" href="#data"><span class="dot"></span>地震數據</a>
+    <a class="nav-tab" href="#knowledge"><span class="dot"></span>知識庫</a>
+    <a class="nav-tab" href="#notify"><span class="dot"></span>通知設定</a>
+  </div>
+</nav>
+
+<main>
+
+<!-- ①  即時監測 ─────────────────────────────── -->
+<section class="section accent-cyan" id="realtime">
+  <div class="section-label">// MODULE_01 · REALTIME</div>
+  <h2 class="section-title">即時監測使用教學</h2>
+  <p class="section-desc">掌握台灣與日本最新地震動態，第一時間了解震央位置與震度資訊。</p>
+  <div class="chips">
+    <span class="chip cyan">即時監測</span>
+    <span class="chip">震度資訊</span>
+  </div>
+  <div class="steps">
+
+    <div class="step accent-cyan">
+      <div class="step-body">
+        <div class="step-num"><span class="step-num-badge">STEP 01</span></div>
+        <h3>進入「即時監測」標籤</h3>
+        <p>啟動 App 後，點擊底部導覽列的「即時監測」圖示，即可查看最新地震列表。點擊單一地震資訊，即會跳出詳細地震資料(包含:最大震度、震源、各地區震度...等資訊)</p>
+        <div class="step-note">// 資料自動更新，無需手動刷新</div>
+      </div>
+      <div class="step-imgs">
+        <div class="step-img">
+          <img src="img/iphone_1.png" alt="台日地震監測 即時監測頁面">
+        </div>
+        <div class="step-img">
+          <img src="img/iphone_2.png" alt="台日地震監測 點擊單一地震資料">
+        </div>
+        <div class="step-img">
+          <img src="img/iphone_3.png" alt="台日地震監測 地震詳細資料">
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="notice">
+    <div class="notice-icon">⚠</div>
+    <p>本 APP 為非官方服務，請以中央氣象署（CWA）及日本氣象廳（JMA）官方公告為最終依據。</p>
+  </div>
+  <div class="notice">
+    <div class="notice-icon">⚠</div>
+    <p>地震預警EEW，僅限日本地區，台灣地區尚未有EEW預警通知。</p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ②  地區統計 ─────────────────────────────── -->
+<section class="section accent-green" id="region">
+  <div class="section-label">// MODULE_02 · REGIONAL STATS</div>
+  <h2 class="section-title">地區統計說明教學</h2>
+  <p class="section-desc">透過統計圖表，觀察各地震帶的歷史分布規律，了解哪些地區地震最頻繁。</p>
+  <div class="chips">
+    <span class="chip green">STATISTICS</span>
+    <span class="chip">歷史數據</span>
+    <span class="chip">地震帶分析</span>
+    <span class="chip">AI 解讀</span>
+  </div>
+  <div class="steps">
+
+    <div class="step accent-green">
+      <div class="step-body">
+        <div class="step-num"><span class="step-num-badge">STEP 01</span></div>
+        <h3>開啟「地區統計」標籤</h3>
+        <p>底部導覽列點擊「地區統計」，可看到台灣及日本最近100筆的地震資料，分布在哪一個地區，可協助判斷評估地震頻繁地區落於那裡，若未來有購屋需求以及旅遊需求都可提前做好心理準備措施。</p>
+      </div>
+      <div class="step-imgs">
+        <div class="step-img">
+          <img src="img/iphone_4.png" alt="台日地震監測 台灣地震地區統計">
+        </div>
+        <div class="step-img">
+          <img src="img/iphone_5.png" alt="台日地震監測 日本地震地區統計">
+        </div>
+        <div class="step-img">
+          <img src="img/iphone_6.png" alt="台日地震監測 地震地區統計點擊甘特圖繪顯示數量">
+        </div>
+      </div>
+    </div>
+
+    <div class="step accent-red">
+      <div class="step-body">
+        <div class="step-num"><span class="step-num-badge">STEP 02</span></div>
+        <h3>使用 AI 一鍵解讀</h3>
+        <p>進入「地區統計」裡面的分頁「年度趨勢(AI解讀)」，選擇你想要查詢的趨勢條件，按下「確認查詢」下方即會顯示解讀相關資料，提供給各位參考。若只是減少年份，或是減少地區則系統不會要求重新查詢，但若需要更換地區以及年份時間，系統會要求重新查詢資料。</p>
+        <div class="step-note">// AI 分析僅供參考，非官方預測</div>
+      </div>
+      <div class="step-imgs">
+        <div class="step-img">
+          <img src="img/iphone_10.png" alt="台日地震監測 AI自動解讀選擇條件">
+        </div>
+        <div class="step-img">
+          <img src="img/iphone_11.png" alt="台日地震監測 AI自動解讀按下確認查詢顯示資料">
+        </div>
+        <div class="step-img">
+          <img src="img/iphone_12.png" alt="台日地震監測 AI自動解讀">
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ③  地震數據 ─────────────────────────────── -->
+<section class="section accent-red" id="data">
+  <div class="section-label">// MODULE_03 · SEISMIC DATA</div>
+  <h2 class="section-title">地震數據使用教學</h2>
+  <p class="section-desc">主要可了解歷史地震數據，以及歷年地震數據的對比，可觀察在大地震後的地震頻繁狀態，與各地區的的影響參考資料。另包含 AI 自動協助解讀功能，也可以給各位當作一個參考資料。</p>
+  <div class="chips">
+    <span class="chip red">DATA</span>
+    <span class="chip">年度地震次數</span>
+    <span class="chip">年度地震比較</span>
+  </div>
+
+    <div class="notice">
+      <div class="notice-icon">⚠</div>
+      <p>台灣/日本，歷史數據皆使用USGS國際資料，可能會有延遲數天同步狀況，通常僅收錄規模4.5以上的大地震，日本當年度則是擁有較完整的資料，詳細完整資料可參考地震監測。</p>
+    </div>
+
+  <div class="steps">
+
+    <div class="step accent-red">
+      <div class="step-body">
+        <div class="step-num"><span class="step-num-badge">STEP 01</span></div>
+        <h3>使用方式</h3>
+        <p>可先選擇「國家」，接著選擇你想查看的「地區」，以及選擇要查詢的「地區」與「年度」</p>
+      </div>
+
+      <div class="step-imgs">
+        <div class="step-img">
+          <img src="img/iphone_7.png" alt="台日地震監測 地震數據選擇國家">
+        </div>
+        <div class="step-img">
+          <img src="img/iphone_8.png" alt="台日地震監測 地震數據選擇地區">
+        </div>
+        <div class="step-img">
+          <img src="img/iphone_9.png" alt="台日地震監測 地震數據選擇年份">
+        </div>
+      </div>
+    </div>
+    
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ④  知識庫 ──────────────────────────────── -->
+<section class="section accent-purple" id="knowledge">
+  <div class="section-label">// MODULE_04 · KNOWLEDGE BASE</div>
+  <h2 class="section-title">知識庫</h2>
+  <p class="section-desc">地震防災知識與應變指南，讓你在地震來臨時知道該怎麼做，增加基礎知識降低恐懼感。</p>
+  <div class="chips">
+    <span class="chip purple">防災知識</span>
+    <span class="chip">地震科學</span>
+    <span class="chip">台灣地質</span>
+    <span class="chip">台灣建築</span>
+  </div>
+
+
+  <div class="steps">
+
+    <div class="step accent-purple">
+      <div class="step-body">
+        <div class="step-num"><span class="step-num-badge">STEP 01</span></div>
+        <h3>開啟「知識」標籤</h3>
+        <p>導覽列點擊「知識」，內含防災指南、震度說明與地震科學...等等，可離線閱覽。</p>
+        <div class="step-note">// 知識庫內容可離線瀏覽，無需網路</div>
+      </div>
+      <div class="step-imgs">
+        <div class="step-img">
+          <img src="img/iphone_13.png" alt="台日地震監測 AI自動解讀">
+        </div>
+        <div class="step-img">
+          <img src="img/iphone_14.png" alt="台日地震監測 AI自動解讀">
+        </div>
+        <div class="step-img">
+          <img src="img/iphone_15.png" alt="台日地震監測 AI自動解讀">
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ⑤  通知設定 ─────────────────────────────── -->
+<section class="section accent-amber" id="notify">
+  <div class="section-label">// MODULE_05 · NOTIFICATIONS</div>
+  <h2 class="section-title">通知設定教學</h2>
+  <p class="section-desc">自訂地震通知的觸發條件，確保重要資訊即時送達，同時避免低震度打擾。若希望關閉地區通知，可將"啟用"取消，即可關閉該國家地震通知。</p>
+  <div class="chips">
+    <span class="chip amber">所在地區選擇</span>
+    <span class="chip">震度門檻</span>
+    <span class="chip">推播通知</span>
+    <span class="chip">靜音設定</span>
+  </div>
+  <div class="steps">
+
+    <div class="step accent-amber">
+      <div class="step-body">
+        <div class="step-num"><span class="step-num-badge">STEP 01</span></div>
+        <h3>開啟推播權限</h3>
+        <p>首次開啟 App 時，系統會請求通知權限，請點選「允許」。若已拒絕，可至手機「設定 → 通知 → 台日地震監測」重新開啟。系統預設下載時都是「全地區」「震度3級」大家可自由至通知設定區域調整。</p>
+      </div>
+      <div class="step-imgs">
+        <div class="step-img">
+          <img src="img/iphone_16.png" alt="台日地震監測 AI自動解讀">
+        </div>
+        <div class="step-img">
+          <img src="img/iphone_17.png" alt="台日地震監測 AI自動解讀">
+        </div>
+        <div class="step-img">
+          <img src="img/iphone_18.png" alt="台日地震監測 AI自動解讀">
+        </div>
+      </div>
+    </div>
+
+
+
+  </div>
+  <div class="notice">
+    <div class="notice-icon">⚠</div>
+    <p>本 App 不使用 GPS 定位，通知地區篩選為手動選擇。推播速度受網路狀況與設備通知佇列影響，可能有數秒至數十秒延遲。</p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p>台日地震監測 · 使用教學文件 · © 2026 YI PEI KUO · ALL RIGHTS RESERVED</p>
+</footer>
+
+<script>
+const sections = document.querySelectorAll('section[id]');
+const tabs     = document.querySelectorAll('.nav-tab');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    tabs.forEach(t => t.classList.remove('active'));
+    const a = document.querySelector(`.nav-tab[href="#${entry.target.id}"]`);
+    if (a) a.classList.add('active');
+  });
+}, { rootMargin: '-30% 0px -60% 0px' });
+sections.forEach(s => observer.observe(s));
+tabs.forEach(tab => {
+  tab.addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelector(tab.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+</body>
+</html>
